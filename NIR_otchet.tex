@@ -3,7 +3,7 @@
 %
 
 \documentclass[a4paper,12pt]{article}
-\usepackage[backend=biber,sorting=none,style=gost-numeric]{biblatex} % библиография
+\usepackage[backend=biber,sorting=none,style=gost-numeric,autolang=other]{biblatex} % библиография
 \usepackage{mathtext} %русские буквы в формулах
 \usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -230,72 +230,76 @@ UX (user experience) --- пользовательский опыт\\
 \begin{MyCode}
 
 public class MainActivity extends AppCompatActivity {	
-	ImageView ivPreview;
-	String mCurrentPhotoPath;
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		ivPreview = findViewById(R.id.image);
-		Button btn = findViewById(R.id.button);
-		btn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dispatchTakePictureIntent();
-			}
-		});
+  ImageView ivPreview;
+  String mCurrentPhotoPath;
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+      ivPreview = findViewById(R.id.image);
+      Button btn = findViewById(R.id.button);
+      btn.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          dispatchTakePictureIntent();
+        }
+      });
 	}
-	
-	private void dispatchTakePictureIntent() {
-		Intent pictureIntent = new Intent(
-		MediaStore.ACTION_IMAGE_CAPTURE);
-		Intent pictureIntent2 = new Intent(
-		MediaStore.ACTION_IMAGE_CAPTURE);
-		if(pictureIntent.resolveActivity(getPackageManager()) != null){
-			//Create a file to store the image
-			File photoFile = null;
-			try {
-				photoFile = createImageFile();
-			} catch (IOException ex) {
-				// Error occurred while creating the File		
-			}
-			if (photoFile != null) {
-				Uri photoURI = FileProvider.getUriForFile(this, getPackageName(), photoFile);
-				Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-				File f = new File(mCurrentPhotoPath);
-				mediaScanIntent.setData(photoURI);
-				this.sendBroadcast(mediaScanIntent);
-				pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-				photoURI);
-				startActivityForResult(pictureIntent2,
-				1);
-			}
-		}
-	}
-	
-	private File createImageFile() throws IOException {
-		// Create an image file name
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-		String imageFileName = "JPEG_" + timeStamp + "_";
-		File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-		File image = File.createTempFile(
-		imageFileName,  /* prefix */
-		".jpg",         /* suffix */
-		storageDir      /* directory */
-		);
-		
-		// Save a file: path for use with ACTION_VIEW intents
-		mCurrentPhotoPath = image.getAbsolutePath();
-		return image;
-	}
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == 1 && resultCode == RESULT_OK) {
-			Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
-			ivPreview.setImageBitmap(imageBitmap);
-		}
-	}
+
+  private void dispatchTakePictureIntent() {
+    Intent pictureIntent = new Intent(
+    MediaStore.ACTION_IMAGE_CAPTURE);
+    Intent pictureIntent2 = new Intent(
+      MediaStore.ACTION_IMAGE_CAPTURE);
+    if(pictureIntent.resolveActivity(getPackageManager()) != null){
+      //Create a file to store the image
+      File photoFile = null;
+      try {
+        photoFile = createImageFile();
+      } catch (IOException ex) {
+        // Error occurred while creating the File		
+      }
+      if (photoFile != null) {
+        Uri photoURI = FileProvider.getUriForFile(this, 
+            getPackageName(), photoFile);
+        Intent mediaScanIntent = new Intent(
+            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        mediaScanIntent.setData(photoURI);
+        this.sendBroadcast(mediaScanIntent);
+        pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+          photoURI);
+        startActivityForResult(pictureIntent2,1);
+      }
+    }
+  }
+
+  private File createImageFile() throws IOException {
+    // Create an image file name
+    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+        .format(new Date());
+    String imageFileName = "JPEG_" + timeStamp + "_";
+    File storageDir = getExternalFilesDir(
+        Environment.DIRECTORY_PICTURES);
+    File image = File.createTempFile(
+      imageFileName,  /* prefix */
+      ".jpg",         /* suffix */
+      storageDir      /* directory */
+    );
+
+    // Save a file: path for use with ACTION_VIEW intents
+    mCurrentPhotoPath = image.getAbsolutePath();
+    return image;
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode,
+      Intent data) {
+    if (requestCode == 1 && resultCode == RESULT_OK) {
+      Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+      ivPreview.setImageBitmap(imageBitmap);
+    }
+  }
 }
 \end{MyCode}
 
