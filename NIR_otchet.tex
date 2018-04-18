@@ -233,28 +233,82 @@ UX (user experience) --- пользовательский опыт\\
 \addcontentsline{toc}{section}{Приложение А}
 
 \begin{center}
-Листинг 1 -- Часть кода реализации класса \verb|HashMapValue|
+Листинг 1 -- Часть кода реализации класса \verb|MainActivity|
 \end{center}
 
 
 \begin{MyCode}
 
-public class HashMapValue {
+public class MainActivity extends AppCompatActivity {
 	
-	protected String filename; 
-	protected HashMap<String, String> hashValue = 
-	new HashMap<>();
-	protected HashMap<String, Boolean> hashKeysFlag =
-	 new HashMap<>();
-	
-	public void setData(String key, String value) {
-		hashValue.put(key, value);
+	ImageView ivPreview;
+	String mCurrentPhotoPath;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		ivPreview = findViewById(R.id.image);
+		Button btn = findViewById(R.id.button);
+		btn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dispatchTakePictureIntent();
+			}
+		});
 	}
 	
-	public String getData(String key) {
-		return hashValue.get(key);
+	private void dispatchTakePictureIntent() {
+		Intent pictureIntent = new Intent(
+		MediaStore.ACTION_IMAGE_CAPTURE);
+		Intent pictureIntent2 = new Intent(
+		MediaStore.ACTION_IMAGE_CAPTURE);
+		if(pictureIntent.resolveActivity(getPackageManager()) != null){
+			//Create a file to store the image
+			File photoFile = null;
+			try {
+				photoFile = createImageFile();
+			} catch (IOException ex) {
+				// Error occurred while creating the File
+				
+			}
+			if (photoFile != null) {
+				Uri photoURI = FileProvider.getUriForFile(this, getPackageName(), photoFile);
+				Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+				File f = new File(mCurrentPhotoPath);
+				mediaScanIntent.setData(photoURI);
+				this.sendBroadcast(mediaScanIntent);
+				pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+				photoURI);
+				startActivityForResult(pictureIntent2,
+				1);
+			}
+		}
 	}
-    /* ... */
+	
+	private File createImageFile() throws IOException {
+		// Create an image file name
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+		String imageFileName = "JPEG_" + timeStamp + "_";
+		File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+		File image = File.createTempFile(
+		imageFileName,  /* prefix */
+		".jpg",         /* suffix */
+		storageDir      /* directory */
+		);
+		
+		// Save a file: path for use with ACTION_VIEW intents
+		mCurrentPhotoPath = image.getAbsolutePath();
+		return image;
+	}
+	
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 1 && resultCode == RESULT_OK) {
+			Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+			ivPreview.setImageBitmap(imageBitmap);
+		}
+	}
 }
 \end{MyCode}
 
