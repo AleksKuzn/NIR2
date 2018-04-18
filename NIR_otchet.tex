@@ -202,16 +202,6 @@ UX (user experience) --- пользовательский опыт\\
 \input{part2} % вторая глава - в файле part2.tex
 \pagebreak
 
-% если есть еще разделы - сохраните их в соответствующих файлах и раскомментируйте строки ниже, при необходимости добавьте еще
-%\input{part3}  % третья глава - в файле part3.tex
-%\pagebreak
-
-%\input{part4} % четвертая глава - в файле part4.tex
-%\pagebreak
-
-%\input{part5}  % пятая глава - в файле part5.tex
-%\pagebreak
-
 \section*{\centering ЗАКЛЮЧЕНИЕ}
 \addcontentsline{toc}{section}{ЗАКЛЮЧЕНИЕ}
 
@@ -239,8 +229,7 @@ UX (user experience) --- пользовательский опыт\\
 
 \begin{MyCode}
 
-public class MainActivity extends AppCompatActivity {
-	
+public class MainActivity extends AppCompatActivity {	
 	ImageView ivPreview;
 	String mCurrentPhotoPath;
 	@Override
@@ -268,8 +257,7 @@ public class MainActivity extends AppCompatActivity {
 			try {
 				photoFile = createImageFile();
 			} catch (IOException ex) {
-				// Error occurred while creating the File
-				
+				// Error occurred while creating the File		
 			}
 			if (photoFile != null) {
 				Uri photoURI = FileProvider.getUriForFile(this, getPackageName(), photoFile);
@@ -300,7 +288,6 @@ public class MainActivity extends AppCompatActivity {
 		mCurrentPhotoPath = image.getAbsolutePath();
 		return image;
 	}
-	
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
